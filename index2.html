@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div>
+    <h1>Todoアプリ</h1>
+    <!-- タスク入力欄 -->
+    <input
+            type="text"
+            v-model="task"
+            placeholder="タスクを入力"
+    >
+    <button @click="addTask">追加</button>
+    <!-- タスクを表示させるためのテーブル -->
+    <table>
+        <thead>
+        <tr>
+            <th>タスク</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr
+                v-for="todo in todos"
+                :key="todo.id"
+        >
+            <td></td>
+            <!------------------------ここから追加------------------------>
+            <td><button @click="deleteTask(todo)">削除</button></td>
+            <!------------------------ここまで追加------------------------>
+            <td><button @click="showEditTask">編集</button></td>
+            <td><input type="text" v-model="editComment" v-show="showEdit"></td>
+            <td><button @click="editTask(todo)" v-show="showEdit">完了</button></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>
+<script>
+    export default {
+        data() {
+            return {
+                // タスクを配列に格納する
+                todos: [],
+                showEdit: false,
+                task: '',
+                // 追加
+                editComment: ''
+            }
+        },
+        methods: {
+            // タスク追加メソッド
+            addTask() {
+                if (this.task === '') {
+                    alert('タスクを入力してください');
+                    return
+                }
+                // inputに入力されたタスクを配列に追加
+                this.todos.push({
+                    id: this.todos.length,
+                    comment: this.task
+                });
+                // タスク入力後、inputを空にする
+                this.task = '';
+            },
+            // タスク編集欄の表示/非表示
+            showEditTask() {
+                // タスク編集欄が非表示なら表示させる
+                if (this.showEdit === false) {
+                    this.showEdit = true;
+                    // タスク編集欄が表示中なら非表示にする
+                } else if (this.showEdit === true) {
+                    this.showEdit = false;
+                }
+            },
+            // タスク編集メソッド
+            editTask(todo) {
+                if (this.editComment === '') {
+                    alert('タスクを入力してください');
+                    return
+                }
+                // どのテーブルを編集するか絞り込む
+                const targetIndex = this.todos.indexOf(todo);
+                console.log(targetIndex);
+                // spliceでタスクを置換する
+                this.todos.splice(targetIndex, 1, {
+                    id: targetIndex,
+                    comment: this.editComment
+                })
+                // タスク入力後、inputを空にする
+                this.editComment = '';
+            },
+            // ---------------ここから追加---------------
+            // タスク削除メソッド
+            deleteTask(todo) {
+                // どのテーブルを削除するか絞り込む
+                const targetIndex = this.todos.indexOf(todo);
+                // spliceでタスクを削除する
+                this.todos.splice(targetIndex, 1);
+                // 削除後idを振り直し、誤作動を無くす
+                for (let i = targetIndex; i < this.todos.length; i++) {
+                    this.todos[i].id = i;
+                }
+            }
+            // ---------------ここまで追加---------------
+        }
+    }
+</script>
